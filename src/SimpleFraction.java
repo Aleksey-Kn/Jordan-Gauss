@@ -19,17 +19,23 @@ public class SimpleFraction {
     }
 
     private void toOneDenominator(SimpleFraction other){
-        int d = other.denominator;
-        for(int n: primeNumber.primeDivisors(denominator)){
-            if(d % n == 0){
-                d /= n;
+        if(other.nominator != 0) {
+            int d = other.denominator;
+            for (int n : primeNumber.primeDivisors(denominator)) {
+                if (d % n == 0) {
+                    d /= n;
+                }
             }
+            int resultDenominator = d * denominator;
+            nominator *= resultDenominator / denominator;
+            other.nominator *= resultDenominator / other.denominator;
+            denominator = resultDenominator;
+            other.denominator = resultDenominator;
         }
-        int resultDenominator = d * denominator;
-        nominator *= resultDenominator / denominator;
-        other.nominator *= resultDenominator / other.denominator;
-        denominator = resultDenominator;
-        other.denominator = resultDenominator;
+    }
+
+    public void inversion(){
+        nominator *= -1;
     }
 
     public SimpleFraction multi(SimpleFraction other){

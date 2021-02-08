@@ -18,12 +18,14 @@ public class PrimeNumber {
             count(number);
         }
         LinkedList<Integer> result = new LinkedList<>();
-        while (Math.abs(number) != 1) {
-            for (int p : prime) {
-                if (number % p == 0) {
-                    number /= p;
-                    result.add(p);
-                    break;
+        if(number != 0) {
+            while (Math.abs(number) != 1) {
+                for (int p : prime) {
+                    if (number % p == 0) {
+                        number /= p;
+                        result.add(p);
+                        break;
+                    }
                 }
             }
         }
