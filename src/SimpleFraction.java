@@ -51,6 +51,17 @@ public class SimpleFraction {
     public void minus(SimpleFraction other){
         SimpleFraction oth = new SimpleFraction(other);
         toOneDenominator(oth);
-        nominator -= other.nominator;
+        nominator -= oth.nominator;
+    }
+
+    @Override
+    public String toString() {
+        for(int n: primeNumber.primeDivisors(nominator)){
+            if(denominator % n == 0){
+                nominator/= n;
+                denominator /= n;
+            }
+        }
+        return (denominator == 1? Integer.toString(nominator) : nominator + "/" + denominator);
     }
 }
