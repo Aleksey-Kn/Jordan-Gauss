@@ -4,11 +4,18 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Gaus {
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
+        SimpleFraction first = new SimpleFraction(5, 4);
+        SimpleFraction second = new SimpleFraction(6, 7);
+        System.out.println(first.minus(second).toString());
+    }
+
+    public static void nomain(String[] args) throws FileNotFoundException {
         Scanner fileScanner = new Scanner(new File("file.txt"));
         SimpleFraction[][] last = new SimpleFraction[fileScanner.nextInt()][fileScanner.nextInt()];
         SimpleFraction[][] now = new SimpleFraction[last.length][last[0].length];
         String[] s;
+        SimpleFraction num, temp;
         for(int i = 0; i < last.length; i++){
             for(int j = 0; j < last[0].length; j++){
                 s = fileScanner.next().split("/");
@@ -22,19 +29,20 @@ public class Gaus {
         for(int k = 0; k < last.length; k++){
             if(!last[k][k].isNull()){
                 printMatrix(last);
-                SimpleFraction num = last[k][k];
-                for(int i = 0; i < last[0].length; i++){
+                num = last[k][k];
+                for(int i = 0; i < last[0].length; i++){ // строка с опорным элементом
                     now[k][i] = last[k][i].div(num);
                 }
-                for(int j = 0; j < last.length; j++){
+                for(int j = 0; j < last.length; j++){ // столбец с опорным элементом
                     if(j != k){
                         now[j][k] = new SimpleFraction(0);
                     }
                 }
-                for(int i = 0; i < last.length; i++){
+                for(int i = 0; i < last.length; i++){ // всё остальное
                     if(i != k) {
                         for (int j = k + 1; j < last[0].length; j++) {
-                            now[i][j] = last[i][j].minus(last[k][j].multi(last[i][k]).div(last[k][k]));
+                            temp = last[i][k].multi(last[k][j]).div(num);
+                            now[i][j] = last[i][j].minus(temp);
                         }
                     }
                 }
