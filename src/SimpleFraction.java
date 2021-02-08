@@ -32,26 +32,38 @@ public class SimpleFraction {
         other.denominator = resultDenominator;
     }
 
-    public void multi(SimpleFraction other){
-        nominator *= other.nominator;
-        denominator *= other.denominator;
+    public SimpleFraction multi(SimpleFraction other){
+        SimpleFraction now = new SimpleFraction(this);
+        now.nominator *= other.nominator;
+        now.denominator *= other.denominator;
+        return now;
     }
 
-    public void div(SimpleFraction other){
-        nominator *= other.denominator;
-        denominator *= other.nominator;
+    public SimpleFraction div(SimpleFraction other){
+        SimpleFraction now = new SimpleFraction(this);
+        now.nominator *= other.denominator;
+        now.denominator *= other.nominator;
+        return now;
     }
 
-    public void plus(SimpleFraction other){
+    public SimpleFraction plus(SimpleFraction other){
         SimpleFraction oth = new SimpleFraction(other);
-        toOneDenominator(oth);
-        nominator += oth.nominator;
+        SimpleFraction now = new SimpleFraction(this);
+        now.toOneDenominator(oth);
+        now.nominator += oth.nominator;
+        return now;
     }
 
-    public void minus(SimpleFraction other){
+    public SimpleFraction minus(SimpleFraction other){
         SimpleFraction oth = new SimpleFraction(other);
-        toOneDenominator(oth);
-        nominator -= oth.nominator;
+        SimpleFraction now = new SimpleFraction(this);
+        now.toOneDenominator(oth);
+        now.nominator -= oth.nominator;
+        return now;
+    }
+
+    public boolean isNull(){
+        return nominator == 0;
     }
 
     @Override
@@ -62,6 +74,6 @@ public class SimpleFraction {
                 denominator /= n;
             }
         }
-        return (denominator == 1? Integer.toString(nominator) : nominator + "/" + denominator);
+        return (denominator == 1 || nominator == 0? Integer.toString(nominator) : nominator + "/" + denominator);
     }
 }
