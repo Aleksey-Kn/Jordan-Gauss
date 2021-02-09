@@ -38,16 +38,36 @@ public class SimpleFraction {
     }
 
     public SimpleFraction multi(SimpleFraction other){
+        for(int n: PrimeNumber.primeDivisors(nominator)){
+            if(denominator % n == 0){
+                nominator /= n;
+                denominator /= n;
+            }
+        }
         SimpleFraction now = new SimpleFraction(this);
         now.nominator *= other.nominator;
         now.denominator *= other.denominator;
+        if(now.denominator < 0){
+            now.denominator *= -1;
+            now.inversion();
+        }
         return now;
     }
 
     public SimpleFraction div(SimpleFraction other){
+        for(int n: PrimeNumber.primeDivisors(nominator)){
+            if(denominator % n == 0){
+                nominator /= n;
+                denominator /= n;
+            }
+        }
         SimpleFraction now = new SimpleFraction(this);
         now.nominator *= other.denominator;
         now.denominator *= other.nominator;
+        if(now.denominator < 0){
+            now.denominator *= -1;
+            now.inversion();
+        }
         return now;
     }
 
@@ -55,23 +75,23 @@ public class SimpleFraction {
         SimpleFraction oth = new SimpleFraction(other);
         SimpleFraction now = new SimpleFraction(this);
         now.toOneDenominator(oth);
-        int n = now.nominator;
-        int o = other.nominator;
-        return new SimpleFraction(n + o, now.denominator);
+        now.nominator += oth.nominator;
+        return now;
     }
 
     public SimpleFraction minus(SimpleFraction other){
         SimpleFraction oth = new SimpleFraction(other);
         SimpleFraction now = new SimpleFraction(this);
         now.toOneDenominator(oth);
-        int n = now.nominator;
-        int o = other.nominator;
-        return new SimpleFraction(n - o, now.denominator);
+        now.nominator -= oth.nominator;
+        return now;
     }
 
     public boolean isNull(){
         return nominator == 0;
     }
+
+    public boolean isPositive(){ return nominator >= 0; }
 
     @Override
     public String toString() {

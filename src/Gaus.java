@@ -5,7 +5,8 @@ import java.util.Scanner;
 
 public class Gaus {
     public static void main(String[] args) throws FileNotFoundException {
-        Scanner fileScanner = new Scanner(new File("file.txt"));
+        System.out.println("File name: ");
+        Scanner fileScanner = new Scanner(new File(new Scanner(System.in).next().trim() + ".txt"));
         SimpleFraction[][] last = new SimpleFraction[fileScanner.nextInt()][fileScanner.nextInt()];
         SimpleFraction[][] now = new SimpleFraction[last.length][last[0].length];
         String[] s;
@@ -40,26 +41,36 @@ public class Gaus {
                         }
                     }
                 }
-                last = now;
+                for (int i = 0; i < last.length; i++){
+                    last[i] = now[i].clone();
+                }
             }
         }
-        for(int i = 0; i < last.length; i++){
-            if(Arrays.stream(last[i]).limit(last[0].length - 1).allMatch(SimpleFraction::isNull)){
+        printMatrix(last);
+        for (SimpleFraction[] simpleFractions : last) {
+            if (Arrays.stream(simpleFractions).limit(last[0].length - 1).allMatch(SimpleFraction::isNull)
+                    && !simpleFractions[last[0].length - 1].isNull()) {
                 System.out.println("Нет решений!");
                 return;
             }
         }
-        for(int i = 0, j = 0; i < last.length; i++){
-            while (last[i][j].isNull()){
+        for(int i = 0, j = 0; i < last.length; i++, j = 0){
+            while (j < last[0].length && last[i][j].isNull()){
                 j++;
             }
-            System.out.printf("x%d = %s", j, last[i][last.length - 1].toString());
-            while(j < last.length - 1){
+            if(j == last[0].length){
+                continue;
+            }
+            System.out.printf("x%d = %s", j + 1, last[i][last[0].length - 1].toString());
+            while(j < last[0].length - 2){
+                j++;
                 if (!last[i][j].isNull()) {
                     last[i][j].inversion();
-                    System.out.print(last[i][j]);
+                    if(last[i][j].isPositive()){
+                        System.out.print('+');
+                    }
+                    System.out.print(last[i][j] + "x" + (j + 1));
                 }
-                j++;
             }
             System.out.println();
         }
@@ -67,7 +78,9 @@ public class Gaus {
 
     private static void printMatrix(SimpleFraction[][] matrix){
         for(SimpleFraction[] arr: matrix){
-            System.out.println(Arrays.toString(arr));
+            if(!Arrays.stream(arr).allMatch(SimpleFraction::isNull)) {
+                System.out.println(Arrays.toString(arr));
+            }
         }
         System.out.println("----------------------------");
     }

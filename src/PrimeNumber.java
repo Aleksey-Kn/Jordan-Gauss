@@ -6,12 +6,13 @@ public class PrimeNumber {
     private static final LinkedList<Integer> prime = new LinkedList<>(List.of(2, 3));
 
     public static LinkedList<Integer> primeDivisors(int number){
+        number = Math.abs(number);
         if(number > limit){
             count(number);
         }
         LinkedList<Integer> result = new LinkedList<>();
         if(number != 0) {
-            while (Math.abs(number) != 1) {
+            while (number != 1) {
                 for (int p : prime) {
                     if (number % p == 0) {
                         number /= p;
