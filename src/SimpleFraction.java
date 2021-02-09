@@ -55,16 +55,18 @@ public class SimpleFraction {
         SimpleFraction oth = new SimpleFraction(other);
         SimpleFraction now = new SimpleFraction(this);
         now.toOneDenominator(oth);
-        now.nominator += oth.getDenominator();
-        return now;
+        int n = now.nominator;
+        int o = other.nominator;
+        return new SimpleFraction(n + o, now.denominator);
     }
 
     public SimpleFraction minus(SimpleFraction other){
         SimpleFraction oth = new SimpleFraction(other);
         SimpleFraction now = new SimpleFraction(this);
         now.toOneDenominator(oth);
-        now.nominator -= oth.nominator;
-        return now;
+        int n = now.nominator;
+        int o = other.nominator;
+        return new SimpleFraction(n - o, now.denominator);
     }
 
     public boolean isNull(){
@@ -73,20 +75,14 @@ public class SimpleFraction {
 
     @Override
     public String toString() {
-        for(int n: PrimeNumber.primeDivisors(nominator)){
-            if(denominator % n == 0){
-                nominator/= n;
-                denominator /= n;
+        int nom = nominator;
+        int den = denominator;
+        for(int n: PrimeNumber.primeDivisors(nom)){
+            if(den % n == 0){
+                nom /= n;
+                den /= n;
             }
         }
-        return (denominator == 1 || nominator == 0? Integer.toString(nominator) : nominator + "/" + denominator);
-    }
-
-    public int getDenominator() {
-        return denominator;
-    }
-
-    public int getNominator() {
-        return nominator;
+        return (den == 1 || nom == 0? Integer.toString(nom) : nom + "/" + den);
     }
 }

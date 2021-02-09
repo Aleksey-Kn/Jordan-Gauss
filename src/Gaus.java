@@ -4,13 +4,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Gaus {
-    public static void main(String[] args) {
-        SimpleFraction first = new SimpleFraction(5, 4);
-        SimpleFraction second = new SimpleFraction(6, 7);
-        System.out.println(first.minus(second).toString());
-    }
-
-    public static void nomain(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException {
         Scanner fileScanner = new Scanner(new File("file.txt"));
         SimpleFraction[][] last = new SimpleFraction[fileScanner.nextInt()][fileScanner.nextInt()];
         SimpleFraction[][] now = new SimpleFraction[last.length][last[0].length];

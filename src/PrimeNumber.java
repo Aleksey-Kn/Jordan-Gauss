@@ -2,7 +2,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PrimeNumber {
-    private static int limit;
+    private static int limit = 3;
     private static final LinkedList<Integer> prime = new LinkedList<>(List.of(2, 3));
 
     public static LinkedList<Integer> primeDivisors(int number){
@@ -38,5 +38,6 @@ public class PrimeNumber {
                 prime.add(i);
             }
         }
+        limit = newLimit;
     }
 }
