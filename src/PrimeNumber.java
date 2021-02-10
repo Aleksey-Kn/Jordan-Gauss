@@ -21,6 +21,9 @@ public class PrimeNumber {
         if(number != 0) {
             while (number != 1) {
                 for (int p : prime) {
+                    if(p > number){
+                        break;
+                    }
                     if (number % p == 0) {
                         number /= p;
                         result.add(p);
