@@ -20,7 +20,7 @@ public class SimpleFraction {
     private void toOneDenominator(SimpleFraction other){
         if(other.nominator != 0) {
             int d = other.denominator;
-            for (int n : PrimeNumber.primeDivisors(denominator)) {
+            for (int n : PrimeNumber.getInstance().primeDivisors(denominator)) {
                 if (d % n == 0) {
                     d /= n;
                 }
@@ -38,7 +38,7 @@ public class SimpleFraction {
     }
 
     public SimpleFraction multi(SimpleFraction other){
-        for(int n: PrimeNumber.primeDivisors(nominator)){
+        for(int n: PrimeNumber.getInstance().primeDivisors(nominator)){
             if(denominator % n == 0){
                 nominator /= n;
                 denominator /= n;
@@ -55,7 +55,7 @@ public class SimpleFraction {
     }
 
     public SimpleFraction div(SimpleFraction other){
-        for(int n: PrimeNumber.primeDivisors(nominator)){
+        for(int n: PrimeNumber.getInstance().primeDivisors(nominator)){
             if(denominator % n == 0){
                 nominator /= n;
                 denominator /= n;
@@ -97,7 +97,7 @@ public class SimpleFraction {
     public String toString() {
         int nom = nominator;
         int den = denominator;
-        for(int n: PrimeNumber.primeDivisors(nom)){
+        for(int n: PrimeNumber.getInstance().primeDivisors(nom)){
             if(den % n == 0){
                 nom /= n;
                 den /= n;

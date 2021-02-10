@@ -2,10 +2,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PrimeNumber {
-    private static int limit = 3;
-    private static final LinkedList<Integer> prime = new LinkedList<>(List.of(2, 3));
+    private int limit = 3;
+    private final LinkedList<Integer> prime = new LinkedList<>(List.of(2, 3));
+    private static final PrimeNumber instance = new PrimeNumber();
 
-    public static LinkedList<Integer> primeDivisors(int number){
+    private PrimeNumber(){}
+
+    public static PrimeNumber getInstance() {
+        return instance;
+    }
+
+    public LinkedList<Integer> primeDivisors(int number){
         number = Math.abs(number);
         if(number > limit){
             count(number);
@@ -25,7 +32,7 @@ public class PrimeNumber {
         return result;
     }
 
-    private static void count(int newLimit){
+    private void count(int newLimit){
         boolean flag;
         for(int i = limit + 1; i <= newLimit; i++){
             flag = true;
