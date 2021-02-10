@@ -1,11 +1,11 @@
 public class SimpleFraction {
-    private int nominator;
-    private int denominator;
-    private boolean minimal = false;
+    private long nominator;
+    private long denominator;
 
     public SimpleFraction(int n, int d) {
-        nominator = n;
-        denominator = d;
+        long nd = nod(n, d);
+        nominator = n / nd;
+        denominator = d / nd;
     }
 
     public SimpleFraction(int number) {
@@ -18,36 +18,30 @@ public class SimpleFraction {
         denominator = other.denominator;
     }
 
-    private void minimisation() {
-        if(!minimal) {
-            for (int n : PrimeNumber.getInstance().primeDivisors(nominator)) {
-                if (denominator % n == 0) {
-                    nominator /= n;
-                    denominator /= n;
-                }
+    private long nod(long f, long s){
+        f = Math.abs(f);
+        s = Math.abs(s);
+        while (f != 0 && s != 0){
+            if(f > s){
+                f %= s;
+            } else {
+                s %= f;
             }
-            minimal = true;
         }
+        return f + s;
+    }
+
+    private void minimisation(){
+        long n = nominator;
+        long d = denominator;
+        long nd = nod(n, d);
+        nominator /= nd;
+        denominator /= nd;
     }
 
     private void toOneDenominator(SimpleFraction other) {
-        int resultDenominator;
         if (other.nominator != 0) {
-            if(Math.max(other.denominator, denominator) % Math.min(other.denominator, denominator) == 0){
-                resultDenominator = Math.max(other.denominator, denominator);
-                nominator *= resultDenominator / denominator;
-                other.nominator *= resultDenominator / other.denominator;
-                denominator = resultDenominator;
-                other.denominator = resultDenominator;
-                return;
-            }
-            int d = other.denominator;
-            for (int n : PrimeNumber.getInstance().primeDivisors(denominator)) {
-                if (d % n == 0) {
-                    d /= n;
-                }
-            }
-            resultDenominator = d * denominator;
+            long resultDenominator = denominator * other.denominator / nod(denominator, other.denominator);
             nominator *= resultDenominator / denominator;
             other.nominator *= resultDenominator / other.denominator;
             denominator = resultDenominator;
@@ -109,16 +103,11 @@ public class SimpleFraction {
 
     @Override
     public String toString() {
-        int nom = nominator;
-        int den = denominator;
-        if(!minimal) {
-            for (int n : PrimeNumber.getInstance().primeDivisors(nom)) {
-                if (den % n == 0) {
-                    nom /= n;
-                    den /= n;
-                }
-            }
-        }
-        return (den == 1 || nom == 0 ? Integer.toString(nom) : nom + "/" + den);
+        long nom = nominator;
+        long den = denominator;
+        long nd = nod(nom, den);
+        nom /= nd;
+        den /= nd;
+        return (den == 1 || nom == 0 ? Long.toString(nom) : nom + "/" + den);
     }
 }
