@@ -2,13 +2,13 @@ public class SimpleFraction {
     private long nominator;
     private long denominator;
 
-    public SimpleFraction(int n, int d) {
+    public SimpleFraction(long n, long d) {
         long nd = nod(n, d);
         nominator = n / nd;
         denominator = d / nd;
     }
 
-    public SimpleFraction(int number) {
+    public SimpleFraction(long number) {
         nominator = number;
         denominator = 1;
     }
@@ -31,14 +31,6 @@ public class SimpleFraction {
         return f + s;
     }
 
-    private void minimisation(){
-        long n = nominator;
-        long d = denominator;
-        long nd = nod(n, d);
-        nominator /= nd;
-        denominator /= nd;
-    }
-
     private void toOneDenominator(SimpleFraction other) {
         if (other.nominator != 0) {
             long resultDenominator = denominator * other.denominator / nod(denominator, other.denominator);
@@ -49,12 +41,17 @@ public class SimpleFraction {
         }
     }
 
+    private void minimisation(){
+        long nd = nod(nominator, denominator);
+        nominator /= nd;
+        denominator /= nd;
+    }
+
     public void inversion() {
         nominator *= -1;
     }
 
     public SimpleFraction multi(SimpleFraction other) {
-        minimisation();
         SimpleFraction now = new SimpleFraction(this);
         now.nominator *= other.nominator;
         now.denominator *= other.denominator;
@@ -62,11 +59,11 @@ public class SimpleFraction {
             now.denominator *= -1;
             now.inversion();
         }
+        now.minimisation();
         return now;
     }
 
     public SimpleFraction div(SimpleFraction other) {
-        minimisation();
         SimpleFraction now = new SimpleFraction(this);
         now.nominator *= other.denominator;
         now.denominator *= other.nominator;
@@ -74,6 +71,7 @@ public class SimpleFraction {
             now.denominator *= -1;
             now.inversion();
         }
+        now.minimisation();
         return now;
     }
 
@@ -82,6 +80,7 @@ public class SimpleFraction {
         SimpleFraction now = new SimpleFraction(this);
         now.toOneDenominator(oth);
         now.nominator += oth.nominator;
+        now.minimisation();
         return now;
     }
 
@@ -90,6 +89,7 @@ public class SimpleFraction {
         SimpleFraction now = new SimpleFraction(this);
         now.toOneDenominator(oth);
         now.nominator -= oth.nominator;
+        now.minimisation();
         return now;
     }
 
