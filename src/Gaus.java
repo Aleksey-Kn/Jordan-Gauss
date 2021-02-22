@@ -11,6 +11,7 @@ public class Gaus {
         SimpleFraction[][] now = new SimpleFraction[last.length][last[0].length];
         String[] s;
         SimpleFraction num, temp;
+
         for(int i = 0; i < last.length; i++){
             for(int j = 0; j < last[0].length; j++){
                 s = fileScanner.next().split("/");
@@ -21,6 +22,7 @@ public class Gaus {
                 }
             }
         }
+
         for(int k = 0; k < last.length; k++){
             if(!last[k][k].isNull()){
                 printMatrix(last);
@@ -46,6 +48,7 @@ public class Gaus {
                 }
             }
         }
+
         int r = printMatrix(last);
         int n = last[0].length - 1;
         int c = f(n) / (f(r) * f(n - r));
