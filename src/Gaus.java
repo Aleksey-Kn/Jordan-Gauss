@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class Gaus {
     public static void main(String[] args) throws FileNotFoundException {
@@ -47,36 +47,54 @@ public class Gaus {
             }
         }
         int r = printMatrix(last);
+        int n = last[0].length - 1;
+        int c = f(n) / (f(r) * f(n - r));
         for (SimpleFraction[] simpleFractions : last) {
-            if (Arrays.stream(simpleFractions).limit(last[0].length - 1).allMatch(SimpleFraction::isNull)
-                    && !simpleFractions[last[0].length - 1].isNull()) {
+            if (Arrays.stream(simpleFractions).limit(n).allMatch(SimpleFraction::isNull)
+                    && !simpleFractions[n].isNull()) {
                 System.out.println("Нет решений!");
                 return;
             }
         }
 
-        /*for(int i = 0, j = 0; i < last.length; i++, j = 0){
-            while (j < last[0].length && last[i][j].isNull()){
-                j++;
-            }
-            if(j == last[0].length){
-                continue;
-            }
-            System.out.printf("x%d = %s", j + 1, last[i][last[0].length - 1].toString());
-            while(j < last[0].length - 2){
-                j++;
-                if (!last[i][j].isNull()) {
-                    last[i][j].inversion();
-                    if(last[i][j].isPositive()){
-                        System.out.print('+');
+        boolean[] combination = new boolean[n];
+        boolean[] localCombination;
+        HashMap<Integer, SimpleFraction>[] buffer;
+        for(int i = n - r; i < n; i++){
+            combination[i] = true;
+        }
+        localCombination = combination.clone();
+        for(int it = 0; it < c; it++) {
+            buffer = new HashMap[n];
+            for (int i = 0, j = 0; i < last.length; i++, j = 0) {
+                if (!Arrays.stream(last[i]).allMatch(SimpleFraction::isNull)) {
+                    while (j < last[0].length - 1 && (last[i][j].isNull() || !localCombination[j])) {
+                        j++;
                     }
-                    System.out.print(last[i][j] + "x" + (j + 1));
+                    if (j == last[0].length - 1) {
+                        buffer = null;
+                        break;
+                    }
+                    localCombination[j] = false;
+                    buffer[j] = new HashMap<>(last[i].length);
+                    buffer[j].put(-1, last[i][last[i].length - 1].div(last[i][j]));
+                    for (int k = 0; k < last[0].length - 1; k++) {
+                        if (k != j && combination[k] && !last[i][k].isNull()) {
+                            buffer[j].put(k, last[i][k].div(last[i][j]).inversion());
+                        }
+                    }
                 }
             }
-            System.out.println();
-        }*/
-
-
+            if (buffer != null) {
+                for(int number = 0; number < n; number++){
+                    if(buffer[number] != null) {
+                        System.out.println("x" + number + "= " + count(buffer, number).toString());
+                    }
+                }
+                System.out.println();
+            }
+            localCombination = nextPermutation(combination);
+        }
     }
 
     private static int printMatrix(SimpleFraction[][] matrix){
@@ -89,5 +107,55 @@ public class Gaus {
         }
         System.out.println("----------------------------");
         return count;
+    }
+
+    private static int f(int in){
+        return IntStream.rangeClosed(1, in).reduce((x, y) -> x * y).orElse(1);
+    }
+
+    private static SimpleFraction count(HashMap<Integer, SimpleFraction>[] data, int index){
+        HashMap<Integer, SimpleFraction> now = data[index];
+        if(now.size() == 1){
+            return now.values().iterator().next();
+        }
+        SimpleFraction result = new SimpleFraction(0);
+        for(Map.Entry<Integer, SimpleFraction> entry: now.entrySet()){
+            result = result.plus((entry.getKey() == -1? entry.getValue():
+                    count(data, entry.getKey()).multi(entry.getValue()))); // складываем все переменные, умножая на их значения, входящие в состав данной
+        }
+        return result;
+    }
+
+    private static boolean[] nextPermutation(boolean[] arr){
+        if(arr[0]){
+            int count = 0, ind = 0;
+            while (ind < arr.length && arr[ind]){ // считаем 1 в начале
+                arr[ind] = false;
+                ind++;
+                count++;
+            }
+            if(ind == arr.length){
+                return arr;
+            }
+            while (!arr[ind]){ // двигаемся до след. 1
+                ind++;
+            }
+            arr[ind - 1] = true;
+            arr[ind] = false;
+            for(int i = ind - 2, it = 0; i > 0 && it < count; i--, it++){
+                arr[i] = true;
+            }
+        } else{
+            int ind = 0;
+            while (ind < arr.length && !arr[ind]){
+                ind++;
+            }
+            if(ind == arr.length){
+                return arr;
+            }
+            arr[ind] = false;
+            arr[ind - 1] = true;
+        }
+        return arr.clone();
     }
 }

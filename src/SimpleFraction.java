@@ -47,8 +47,8 @@ public class SimpleFraction {
         denominator /= nd;
     }
 
-    public void inversion() {
-        nominator *= -1;
+    public SimpleFraction inversion() {
+        return new SimpleFraction(-nominator, denominator);
     }
 
     public SimpleFraction multi(SimpleFraction other) {
