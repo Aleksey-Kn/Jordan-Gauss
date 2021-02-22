@@ -46,7 +46,7 @@ public class Gaus {
                 }
             }
         }
-        printMatrix(last);
+        int r = printMatrix(last);
         for (SimpleFraction[] simpleFractions : last) {
             if (Arrays.stream(simpleFractions).limit(last[0].length - 1).allMatch(SimpleFraction::isNull)
                     && !simpleFractions[last[0].length - 1].isNull()) {
@@ -54,7 +54,8 @@ public class Gaus {
                 return;
             }
         }
-        for(int i = 0, j = 0; i < last.length; i++, j = 0){
+
+        /*for(int i = 0, j = 0; i < last.length; i++, j = 0){
             while (j < last[0].length && last[i][j].isNull()){
                 j++;
             }
@@ -73,15 +74,20 @@ public class Gaus {
                 }
             }
             System.out.println();
-        }
+        }*/
+
+
     }
 
-    private static void printMatrix(SimpleFraction[][] matrix){
+    private static int printMatrix(SimpleFraction[][] matrix){
+        int count = 0;
         for(SimpleFraction[] arr: matrix){
             if(!Arrays.stream(arr).allMatch(SimpleFraction::isNull)) {
                 System.out.println(Arrays.toString(arr));
+                count++;
             }
         }
         System.out.println("----------------------------");
+        return count;
     }
 }
