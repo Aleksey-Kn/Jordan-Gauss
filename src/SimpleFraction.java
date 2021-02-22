@@ -57,7 +57,7 @@ public class SimpleFraction {
         now.denominator *= other.denominator;
         if (now.denominator < 0) {
             now.denominator *= -1;
-            now.inversion();
+            now = now.inversion();
         }
         now.minimisation();
         return now;
@@ -69,7 +69,7 @@ public class SimpleFraction {
         now.denominator *= other.nominator;
         if (now.denominator < 0) {
             now.denominator *= -1;
-            now.inversion();
+            now = now.inversion();
         }
         now.minimisation();
         return now;
