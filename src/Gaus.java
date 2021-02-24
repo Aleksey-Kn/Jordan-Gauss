@@ -67,7 +67,7 @@ public class Gaus {
             combination[i] = true;
         }
         localCombination = combination.clone();
-        for(int it = 0; it < c; it++) {
+        for(int it = 0; it < c; it++, localCombination = nextPermutation(combination)) {
             buffer = new HashMap[n];
             for (int i = 0, j = 0; i < last.length; i++, j = 0) {
                 if (!Arrays.stream(last[i]).allMatch(SimpleFraction::isNull)) {
@@ -89,14 +89,29 @@ public class Gaus {
                 }
             }
             if (buffer != null) {
-                for(int number = 0; number < n; number++){
-                    if(buffer[number] != null) {
-                        System.out.println("x" + number + "= " + count(buffer, number).toString());
+                boolean flag = false;
+                for(int i = 0; i < n; i++){
+                    if(buffer[i] != null){
+                        HashMap<Integer, SimpleFraction>[] finalBuffer = buffer;
+                        int finalI = i;
+                        if(buffer[i].keySet().stream()
+                                .filter(o -> o > 0)
+                                .flatMap(ind -> finalBuffer[ind].keySet().stream())
+                                .anyMatch(o -> o.equals(finalI))){
+                            flag = true;
+                            break;
+                        }
                     }
                 }
-                System.out.println();
+                if(!flag) {
+                    for (int number = 0; number < n; number++) {
+                        if (buffer[number] != null) {
+                            System.out.println("x" + number + "= " + count(buffer, number).toString());
+                        }
+                    }
+                    System.out.println();
+                }
             }
-            localCombination = nextPermutation(combination);
         }
     }
 
