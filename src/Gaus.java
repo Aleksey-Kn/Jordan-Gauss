@@ -8,9 +8,10 @@ public class Gaus {
         System.out.println("File name: ");
         Scanner fileScanner = new Scanner(new File(new Scanner(System.in).next().trim() + ".txt"));
         SimpleFraction[][] last = new SimpleFraction[fileScanner.nextInt()][fileScanner.nextInt()];
-        int[] basis = new int[last[0].length];
+        Map<Integer, Integer> basis = new HashMap<>(last.length); // индекс: номер строки
         String[] s;
         boolean containBasis = false;
+        boolean cleanColumn;
 
         for(int i = 0; i < last.length; i++){
             for(int j = 0; j < last[0].length; j++){
@@ -23,21 +24,45 @@ public class Gaus {
             }
         }
 
-        for(int i = 0, ind; i < last.length; i++, containBasis = false){
+        for(int i = 0, ind = -1; i < last.length - 1; i++, containBasis = false){
+            printMatrix(last);
             for(int j = 0; j < last[0].length; j++){
                 if(last[i][j].mayBeBasis()){
-                    if(!last[i][j].isPositive()){
-                        for(int k = 0; k < last.length; k++){
-                            last[i][k] = last[i][k].inversion();
+                    cleanColumn = true;
+                    for(int k = 0; k < last.length - 1; k++){
+                        if(!last[k][j].isNull()){
+                            cleanColumn = false;
+                            break;
                         }
                     }
-                    ind = j;
-                    containBasis = true;
-                    break;
+                    if(cleanColumn) {
+                        if (!last[i][j].isPositive()) {
+                            for (int k = 0; k < last.length; k++) {
+                                last[i][k] = last[i][k].inversion();
+                            }
+                        }
+                        ind = j;
+                        containBasis = true;
+                        break;
+                    }
                 }
             }
             if(containBasis){
-
+                basis.put(ind, i);
+            } else{
+                int b = 0;
+                while (b < last[0].length - 1 && (basis.containsKey(b) || last[i][b].isNull())){
+                    b++;
+                }
+                if(b == last[i].length - 1) {
+                    if (!last[i][last[i].length - 1].isNull()) {
+                        System.out.println("Нет решений!");
+                        return;
+                    }
+                    continue;
+                }
+                last = makeBasis(last, i, b);
+                basis.put(b, i);
             }
         }
 
@@ -49,15 +74,16 @@ public class Gaus {
             }
         }
 
-
+        printMatrix(last);
+        basis.forEach((k, v) -> System.out.println(v + " str.: " + k));
 
     }
 
     private static void printMatrix(SimpleFraction[][] matrix){
-        for(SimpleFraction[] arr: matrix){
-            //if(!Arrays.stream(arr).allMatch(SimpleFraction::isNull)) {
-                System.out.println(Arrays.toString(arr));
-            //}
+        for(int i = 0; i < matrix.length - 1; i++){
+            if(!Arrays.stream(matrix[i]).allMatch(SimpleFraction::isNull)) {
+                System.out.println(Arrays.toString(matrix[i]));
+            }
         }
         System.out.println("----------------------------");
     }
@@ -66,10 +92,9 @@ public class Gaus {
         return IntStream.rangeClosed(1, in).reduce((x, y) -> x * y).orElse(1);
     }
 
-    private static void makeBasis(SimpleFraction[][] last, int y, int x){
+    private static SimpleFraction[][] makeBasis(SimpleFraction[][] last, int y, int x){
         SimpleFraction[][] now = new SimpleFraction[last.length][last[0].length];
         if(!last[y][x].isNull()){
-            printMatrix(last);
             SimpleFraction num = last[y][x];
             for(int i = 0; i < last[0].length; i++){ // строка с опорным элементом
                 now[y][i] = last[y][i].div(num);
@@ -83,13 +108,11 @@ public class Gaus {
                 if(i != y) {
                     for (int j = 0; j < last[0].length; j++) {
                         if(j != x)
-                        now[i][j] = last[i][j].minus(last[i][x].multi(last[y][j]).div(num));
+                            now[i][j] = last[i][j].minus(last[i][x].multi(last[y][j]).div(num));
                     }
                 }
             }
-            for (int i = 0; i < last.length; i++){
-                last[i] = now[i].clone();
-            }
         }
+        return now;
     }
 }
