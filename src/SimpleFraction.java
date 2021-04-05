@@ -97,6 +97,11 @@ public class SimpleFraction {
         return nominator == 0;
     }
 
+    public boolean mayBeBasis(){
+        minimisation();
+        return denominator == 1 && Math.abs(nominator) == 1;
+    }
+
     public boolean isPositive() {
         return nominator >= 0;
     }
