@@ -154,15 +154,25 @@ public class Gaus {
             String temp;
             for(int i = 0; i < h - 2; i++) {
                 temp = (basis.containsValue(i) ? finalLast[basis.getKey(i)][w - 1].toString() : "0");
-                System.out.printf("л*%s+%s-л*%s; ",
-                        (answer.containsKey(i) ? answer.get(i).toString() : "0"),
-                        temp, temp);
+                if(temp.equals("0") && !answer.containsKey(i)) {
+                    System.out.print("0; ");
+                }
+                else{
+                    System.out.printf("%sл+%s-%sл; ",
+                            (answer.containsKey(i) ? answer.get(i).toString() : "0"),
+                            temp, temp);
+                }
             }
 
             temp = (basis.containsValue(h - 2) ? finalLast[basis.getKey(h - 2)][w - 1].toString() : "0");
-            System.out.printf("л*%s+%s-л*%s)= ",
-                    (answer.containsKey(h - 2) ? answer.get(h - 2).toString() : "0"),
-                    temp, temp);
+            if(temp.equals("0") && !answer.containsKey(h - 2)) {
+                System.out.print("0; ");
+            }
+            else {
+                System.out.printf("%sл+%s-%sл)= ",
+                        (answer.containsKey(h - 2) ? answer.get(h - 2).toString() : "0"),
+                        temp, temp);
+            }
         }, () -> {
             for(int i = 0; i < h - 2; i++){
                 System.out.print(basis.containsValue(i)? finalLast[basis.getKey(i)][w - 1].toString(): "0");
