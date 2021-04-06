@@ -72,14 +72,6 @@ public class Gaus {
             }
         }
 
-        for (SimpleFraction[] simpleFractions : last) {
-            if (Arrays.stream(simpleFractions).limit(w - 1).allMatch(SimpleFraction::isNull)
-                    && !simpleFractions[w - 1].isNull()) {
-                System.out.println("Нет решений");
-                return;
-            }
-        }
-
         for(int i = 0; i < w - 1; i++){
             last[h - 1][i] = last[h - 1][i].inversion();
         }
@@ -115,7 +107,7 @@ public class Gaus {
             for(int i = 0; i < w - 1; i++){
                 if(last[h - 1][i].compareTo(min) < 0){
                     x = i;
-                    min = last[i][w - 1];
+                    min = last[h - 1][i];
                 }
             }
             min = new SimpleFraction(Integer.MAX_VALUE);
