@@ -5,16 +5,17 @@ import java.util.*;
 public class Gaus {
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("File name: ");
-        Scanner fileScanner = new Scanner(new File(new Scanner(System.in).next().trim() + ".txt"));
+        final Scanner fileScanner = new Scanner(new File(new Scanner(System.in).next().trim() + ".txt"));
         final int h = fileScanner.nextInt();
         final int w = fileScanner.nextInt();
         SimpleFraction[][] last = new SimpleFraction[h][w];
-        DualMap<Integer, Integer> basis = new DualMap<>(); // номер строки : номер x
+        final DualMap<Integer, Integer> basis = new DualMap<>(); // номер строки : номер x
         String[] s;
         boolean containBasis = false;
+        Optional<Map<Integer, SimpleFraction>> firstAnswer = Optional.empty();
         boolean cleanColumn, needPositive, bIsNull;
         SimpleFraction min, now;
-        int x = 0, y;
+        int x = 0, y = 0;
 
         for(int i = 0; i < h; i++){
             for(int j = 0; j < w; j++){
@@ -74,7 +75,7 @@ public class Gaus {
         for (SimpleFraction[] simpleFractions : last) {
             if (Arrays.stream(simpleFractions).limit(w - 1).allMatch(SimpleFraction::isNull)
                     && !simpleFractions[w - 1].isNull()) {
-                System.out.println("Нет решений!");
+                System.out.println("Нет решений");
                 return;
             }
         }
@@ -83,7 +84,7 @@ public class Gaus {
             last[h - 1][i] = last[h - 1][i].inversion();
         }
 
-        while (Arrays.stream(last).limit(h - 1).anyMatch(n -> !n[w - 1].isPositive())){
+        while (Arrays.stream(last).limit(h - 1).anyMatch(n -> !n[w - 1].isPositive())){ //двойственный
             printSymplix(last, basis);
             min = last[0][w - 1];
             y = 0;
@@ -95,7 +96,7 @@ public class Gaus {
             }
             min = new SimpleFraction(Integer.MAX_VALUE);
             for(int i = 0; i < w - 1; i++){
-                if(!last[y][i].isPositive() && last[h - 1][i].isPositive() && !last[h - 1][i].isNull()) { // в Z строке брать только положительные?
+                if(!last[y][i].isPositive() && last[h - 1][i].isPositive() && !last[h - 1][i].isNull()) {
                     now = last[h - 1][i].div(last[y][i].inversion());
                     if (min.compareTo(now) > 0) {
                         min = now;
@@ -106,7 +107,80 @@ public class Gaus {
             last = makeBasis(last, y, x);
             basis.put(y, x);
         }
+
+        while (Arrays.stream(last[h - 1]).limit(w - 1).anyMatch(n -> !n.isPositive())){ // обычный
+            printSymplix(last, basis);
+            min = last[h - 1][0];
+            x = 0;
+            for(int i = 0; i < w - 1; i++){
+                if(last[h - 1][i].compareTo(min) < 0){
+                    x = i;
+                    min = last[i][w - 1];
+                }
+            }
+            min = new SimpleFraction(Integer.MAX_VALUE);
+            for(int i = 0; i < h - 1; i++){
+                if(last[i][x].isPositive()) {
+                    now = last[i][w - 1].div(last[i][x]);
+                    if (min.compareTo(now) > 0) {
+                        min = now;
+                        y = i;
+                    }
+                }
+            }
+            last = makeBasis(last, y, x);
+            basis.put(y, x);
+        }
+
         printSymplix(last, basis);
+
+        if (Arrays.stream(last[h - 1]).limit(w - 1).filter(SimpleFraction::isNull).count() > basis.size()){ // бесконечно много решений
+            firstAnswer = Optional.of(new HashTable<>());
+            for(int i = 0; i < h - 1; i++){
+                firstAnswer.get().put(i, last[i][w - 1]);
+                if(last[h - 1][i].isNull() && !basis.containsValue(i)){
+                    x = i;
+                }
+            }
+            min = new SimpleFraction(Integer.MAX_VALUE);
+            for(int i = 0; i < h - 1; i++){
+                if(last[i][x].isPositive()) {
+                    now = last[i][w - 1].div(last[i][x]);
+                    if (min.compareTo(now) > 0) {
+                        min = now;
+                        y = i;
+                    }
+                }
+            }
+            last = makeBasis(last, y, x);
+            basis.put(y, x);
+        }
+
+        System.out.print("Z(");
+        final SimpleFraction[][] finalLast = last;
+        firstAnswer.ifPresentOrElse(answer -> {
+            String temp;
+            for(int i = 0; i < h - 2; i++) {
+                temp = (basis.containsValue(i) ? finalLast[basis.getKey(i)][w - 1].toString() : "0");
+                System.out.printf("л*%s+%s-л*%s; ",
+                        (answer.containsKey(i) ? answer.get(i).toString() : "0"),
+                        temp, temp);
+            }
+
+            temp = (basis.containsValue(h - 2) ? finalLast[basis.getKey(h - 2)][w - 1].toString() : "0");
+            System.out.printf("л*%s+%s-л*%s)= ",
+                    (answer.containsKey(h - 2) ? answer.get(h - 2).toString() : "0"),
+                    temp, temp);
+        }, () -> {
+            for(int i = 0; i < h - 2; i++){
+                System.out.print(basis.containsValue(i)? finalLast[basis.getKey(i)][w - 1].toString(): "0");
+                System.out.print("; ");
+            }
+            System.out.print(basis.containsValue(h - 2)? finalLast[basis.getKey(h - 2)][w - 1].toString(): "0");
+            System.out.print(")= ");
+        });
+
+        System.out.println(last[h - 1][w - 1]);
     }
 
     private static void printMatrix(SimpleFraction[][] matrix){
@@ -122,14 +196,14 @@ public class Gaus {
         final int w = matrix[0].length;
         final int h = matrix.length;
         for (int i = 0; i < w - 1; i++){
-            System.out.printf("x%-5d", i);
+            System.out.printf("x%-5d", i + 1);
         }
         System.out.println();
         System.out.println("---------------------------------------------");
         final int size = map.size();
         for(int i = 0; i < size; i++){
             System.out.print('x');
-            System.out.print(map.get(i));
+            System.out.print(map.get(i) + 1);
             System.out.printf("  |%-6s| ", matrix[i][w - 1].toString());
             for(int j = 0; j < w - 1; j++){
                 System.out.printf("%-6s", matrix[i][j].toString());
