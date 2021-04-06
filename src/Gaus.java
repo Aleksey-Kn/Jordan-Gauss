@@ -7,14 +7,16 @@ public class Gaus {
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("File name: ");
         Scanner fileScanner = new Scanner(new File(new Scanner(System.in).next().trim() + ".txt"));
-        SimpleFraction[][] last = new SimpleFraction[fileScanner.nextInt()][fileScanner.nextInt()];
-        Map<Integer, Integer> basis = new HashMap<>(last.length); // индекс: номер строки
+        final int h = fileScanner.nextInt();
+        final int w = fileScanner.nextInt();
+        SimpleFraction[][] last = new SimpleFraction[h][w];
+        Map<Integer, Integer> basis = new HashMap<>(h - 1); // индекс x: номер строки
         String[] s;
         boolean containBasis = false;
-        boolean cleanColumn;
+        boolean cleanColumn, needPositive, bIsNull;
 
-        for(int i = 0; i < last.length; i++){
-            for(int j = 0; j < last[0].length; j++){
+        for(int i = 0; i < h; i++){
+            for(int j = 0; j < w; j++){
                 s = fileScanner.next().split("/");
                 if(s.length == 1){
                     last[i][j] = new SimpleFraction(Integer.parseInt(s[0]));
@@ -24,22 +26,22 @@ public class Gaus {
             }
         }
 
-        for(int i = 0, ind = -1; i < last.length - 1; i++, containBasis = false){
+        for(int i = 0, ind = -1; i < h - 1; i++, containBasis = false){
             printMatrix(last);
-            for(int j = 0; j < last[0].length; j++){
-                if(last[i][j].mayBeBasis()){
+            needPositive = !last[i][w - 1].isPositive();
+            bIsNull = last[i][w - 1].isNull();
+            for(int j = 0; j < w - 1; j++){
+                if(last[i][j].mayBeBasis() && (last[i][j].isPositive() == needPositive || bIsNull)){
                     cleanColumn = true;
-                    for(int k = 0; k < last.length - 1; k++){
-                        if(!last[k][j].isNull()){
+                    for(int k = 0; k < h; k++){
+                        if(k != i && !last[k][j].isNull()){
                             cleanColumn = false;
                             break;
                         }
                     }
                     if(cleanColumn) {
                         if (!last[i][j].isPositive()) {
-                            for (int k = 0; k < last.length; k++) {
-                                last[i][k] = last[i][k].inversion();
-                            }
+                            last[i] = Arrays.stream(last[i]).map(SimpleFraction::inversion).toArray(SimpleFraction[]::new);
                         }
                         ind = j;
                         containBasis = true;
@@ -51,11 +53,14 @@ public class Gaus {
                 basis.put(ind, i);
             } else{
                 int b = 0;
-                while (b < last[0].length - 1 && (basis.containsKey(b) || last[i][b].isNull())){
+                while (b < w - 1
+                        && (basis.containsKey(b)
+                        || last[i][b].isNull()
+                        || !(last[i][b].isPositive() == needPositive || bIsNull))){
                     b++;
                 }
-                if(b == last[i].length - 1) {
-                    if (!last[i][last[i].length - 1].isNull()) {
+                if(b == w - 1) {
+                    if (!last[i][w - 1].isNull()) {
                         System.out.println("Нет решений!");
                         return;
                     }
@@ -67,8 +72,8 @@ public class Gaus {
         }
 
         for (SimpleFraction[] simpleFractions : last) {
-            if (Arrays.stream(simpleFractions).limit(last[0].length - 1).allMatch(SimpleFraction::isNull)
-                    && !simpleFractions[last[0].length - 1].isNull()) {
+            if (Arrays.stream(simpleFractions).limit(w - 1).allMatch(SimpleFraction::isNull)
+                    && !simpleFractions[w - 1].isNull()) {
                 System.out.println("Нет решений!");
                 return;
             }
@@ -86,10 +91,6 @@ public class Gaus {
             }
         }
         System.out.println("----------------------------");
-    }
-
-    private static int f(int in){
-        return IntStream.rangeClosed(1, in).reduce((x, y) -> x * y).orElse(1);
     }
 
     private static SimpleFraction[][] makeBasis(SimpleFraction[][] last, int y, int x){
