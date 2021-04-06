@@ -1,4 +1,4 @@
-public class SimpleFraction {
+public class SimpleFraction implements Comparable<SimpleFraction> {
     private long nominator;
     private long denominator;
 
@@ -34,8 +34,8 @@ public class SimpleFraction {
     private void toOneDenominator(SimpleFraction other) {
         if (other.nominator != 0) {
             long resultDenominator = denominator * other.denominator / nod(denominator, other.denominator);
-            nominator *= resultDenominator / denominator;
-            other.nominator *= resultDenominator / other.denominator;
+            nominator *= (double) resultDenominator / denominator;
+            other.nominator *= (double) resultDenominator / other.denominator;
             denominator = resultDenominator;
             other.denominator = resultDenominator;
         }
@@ -114,5 +114,11 @@ public class SimpleFraction {
         nom /= nd;
         den /= nd;
         return (den == 1 || nom == 0 ? Long.toString(nom) : nom + "/" + den);
+    }
+
+    @Override
+    public int compareTo(SimpleFraction o) {
+        toOneDenominator(o);
+        return (int)(nominator - o.nominator);
     }
 }
