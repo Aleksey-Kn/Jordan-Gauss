@@ -9,7 +9,7 @@ public class Gaus {
         final int h = fileScanner.nextInt();
         final int w = fileScanner.nextInt();
         SimpleFraction[][] last = new SimpleFraction[h][w];
-        Map<Integer, Integer> basis = new HashMap<>(h - 1); // индекс x: номер строки
+        Map<Integer, Integer> basis = new DualMap<>(); // индекс x: номер строки
         String[] s;
         boolean containBasis = false;
         boolean cleanColumn, needPositive, bIsNull;
@@ -80,6 +80,9 @@ public class Gaus {
         printMatrix(last);
         basis.forEach((k, v) -> System.out.println(v + " str.: " + k));
 
+        while (Arrays.stream(last).anyMatch(n -> !n[w - 1].isPositive())){
+            printSymplix(last);
+        }
     }
 
     private static void printMatrix(SimpleFraction[][] matrix){
@@ -88,6 +91,15 @@ public class Gaus {
                 .filter(now -> !Arrays.stream(now).allMatch(SimpleFraction::isNull))
                 .forEach(now -> System.out.println(Arrays.toString(now)));
         System.out.println("----------------------------");
+    }
+
+    private static void printSymplix(SimpleFraction[][] matrix){
+        System.out.print("б.п.| 1 |");
+        final int w = matrix[0].length;
+        final int h = matrix.length;
+        for (int i = 0; i < w - 1; i++){
+            System.out.printf("x%d\t", i);
+        }
     }
 
     private static SimpleFraction[][] makeBasis(SimpleFraction[][] last, int y, int x){
