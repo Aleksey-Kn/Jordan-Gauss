@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class Gaus {
     public static void main(String[] args) throws FileNotFoundException {
@@ -27,7 +26,6 @@ public class Gaus {
         }
 
         for(int i = 0, ind = -1; i < h - 1; i++, containBasis = false){
-            printMatrix(last);
             needPositive = !last[i][w - 1].isPositive();
             bIsNull = last[i][w - 1].isNull();
             for(int j = 0; j < w - 1; j++){
@@ -85,11 +83,10 @@ public class Gaus {
     }
 
     private static void printMatrix(SimpleFraction[][] matrix){
-        for(int i = 0; i < matrix.length - 1; i++){
-            if(!Arrays.stream(matrix[i]).allMatch(SimpleFraction::isNull)) {
-                System.out.println(Arrays.toString(matrix[i]));
-            }
-        }
+        Arrays.stream(matrix)
+                .limit(matrix.length - 1)
+                .filter(now -> !Arrays.stream(now).allMatch(SimpleFraction::isNull))
+                .forEach(now -> System.out.println(Arrays.toString(now)));
         System.out.println("----------------------------");
     }
 
