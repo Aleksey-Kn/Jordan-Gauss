@@ -152,7 +152,7 @@ public class Gaus {
         final SimpleFraction[][] finalLast = last;
         firstAnswer.ifPresentOrElse(answer -> {
             String temp;
-            for(int i = 0; i < h - 2; i++) {
+            for(int i = 0; i < w - 2; i++) {
                 temp = (basis.containsValue(i) ? finalLast[basis.getKey(i)][w - 1].toString() : "0");
                 if(temp.equals("0") && !answer.containsKey(i)) {
                     System.out.print("0; ");
@@ -164,21 +164,21 @@ public class Gaus {
                 }
             }
 
-            temp = (basis.containsValue(h - 2) ? finalLast[basis.getKey(h - 2)][w - 1].toString() : "0");
-            if(temp.equals("0") && !answer.containsKey(h - 2)) {
+            temp = (basis.containsValue(w - 2) ? finalLast[basis.getKey(w - 2)][w - 1].toString() : "0");
+            if(temp.equals("0") && !answer.containsKey(w - 2)) {
                 System.out.print("0; ");
             }
             else {
                 System.out.printf("%sл+%s-%sл)= ",
-                        (answer.containsKey(h - 2) ? answer.get(h - 2).toString() : "0"),
+                        (answer.containsKey(w - 2) ? answer.get(w - 2).toString() : "0"),
                         temp, temp);
             }
         }, () -> {
-            for(int i = 0; i < h - 2; i++){
+            for(int i = 0; i < w - 2; i++){
                 System.out.print(basis.containsValue(i)? finalLast[basis.getKey(i)][w - 1].toString(): "0");
                 System.out.print("; ");
             }
-            System.out.print(basis.containsValue(h - 2)? finalLast[basis.getKey(h - 2)][w - 1].toString(): "0");
+            System.out.print(basis.containsValue(w - 2)? finalLast[basis.getKey(w - 2)][w - 1].toString(): "0");
             System.out.print(")= ");
         });
 

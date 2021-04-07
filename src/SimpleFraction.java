@@ -119,6 +119,6 @@ public class SimpleFraction implements Comparable<SimpleFraction> {
     @Override
     public int compareTo(SimpleFraction o) {
         toOneDenominator(o);
-        return (int)(nominator - o.nominator);
+        return Long.compare(nominator, o.nominator);
     }
 }
