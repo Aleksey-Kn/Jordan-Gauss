@@ -8,9 +8,7 @@ public class Gaus {
         System.out.println("File name: ");
         Scanner fileScanner = new Scanner(new File(new Scanner(System.in).next().trim() + ".txt"));
         SimpleFraction[][] last = new SimpleFraction[fileScanner.nextInt()][fileScanner.nextInt()];
-        SimpleFraction[][] now = new SimpleFraction[last.length][last[0].length];
         String[] s;
-        SimpleFraction num, temp;
 
         for(int i = 0; i < last.length; i++){
             for(int j = 0; j < last[0].length; j++){
@@ -19,32 +17,6 @@ public class Gaus {
                     last[i][j] = new SimpleFraction(Integer.parseInt(s[0]));
                 } else{
                     last[i][j] = new SimpleFraction(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
-                }
-            }
-        }
-
-        for(int k = 0; k < last.length; k++){
-            if(!last[k][k].isNull()){
-                printMatrix(last);
-                num = last[k][k];
-                for(int i = 0; i < last[0].length; i++){ // строка с опорным элементом
-                    now[k][i] = last[k][i].div(num);
-                }
-                for(int j = 0; j < last.length; j++){ // столбец с опорным элементом
-                    if(j != k){
-                        now[j][k] = new SimpleFraction(0);
-                    }
-                }
-                for(int i = 0; i < last.length; i++){ // всё остальное
-                    if(i != k) {
-                        for (int j = k + 1; j < last[0].length; j++) {
-                            temp = last[i][k].multi(last[k][j]).div(num);
-                            now[i][j] = last[i][j].minus(temp);
-                        }
-                    }
-                }
-                for (int i = 0; i < last.length; i++){
-                    last[i] = now[i].clone();
                 }
             }
         }
@@ -62,13 +34,13 @@ public class Gaus {
 
         boolean[] combination = new boolean[n];
         boolean[] localCombination;
-        HashMap<Integer, SimpleFraction>[] buffer;
+        HashMap<Integer, Integer> buffer; // ind x: string numb
         for(int i = n - r; i < n; i++){
             combination[i] = true;
         }
         localCombination = combination.clone();
         for(int it = 0; it < c; it++) {
-            buffer = new HashMap[n];
+            buffer = new HashMap<>();
             for (int i = 0, j = 0; i < last.length; i++, j = 0) {
                 if (!Arrays.stream(last[i]).allMatch(SimpleFraction::isNull)) {
                     while (j < last[0].length - 1 && (last[i][j].isNull() || !localCombination[j])) {
@@ -79,20 +51,13 @@ public class Gaus {
                         break;
                     }
                     localCombination[j] = false;
-                    buffer[j] = new HashMap<>(last[i].length);
-                    buffer[j].put(-1, last[i][last[i].length - 1].div(last[i][j]));
-                    for (int k = 0; k < last[0].length - 1; k++) {
-                        if (k != j && combination[k] && !last[i][k].isNull()) {
-                            buffer[j].put(k, last[i][k].div(last[i][j]).inversion());
-                        }
-                    }
+                    buffer.put(j, i);
+                    makeBasis(last, i, j);
                 }
             }
             if (buffer != null) {
-                for(int number = 0; number < n; number++){
-                    if(buffer[number] != null) {
-                        System.out.println("x" + number + "= " + count(buffer, number).toString());
-                    }
+                for(Map.Entry<Integer, Integer> entry: buffer.entrySet()){
+                    System.out.println("x" + (entry.getKey() + 1) + ": " + last[entry.getValue()][last[0].length - 1]);
                 }
                 System.out.println();
             }
@@ -116,17 +81,33 @@ public class Gaus {
         return IntStream.rangeClosed(1, in).reduce((x, y) -> x * y).orElse(1);
     }
 
-    private static SimpleFraction count(HashMap<Integer, SimpleFraction>[] data, int index){
-        HashMap<Integer, SimpleFraction> now = data[index];
-        if(now.size() == 1){
-            return now.values().iterator().next();
+    private static void makeBasis(SimpleFraction[][] last, int y, int x){
+        SimpleFraction[][] now = new SimpleFraction[last.length][last[0].length];
+        SimpleFraction num, temp;
+        if(!last[y][x].isNull()){
+            num = last[y][x];
+            for(int i = 0; i < last[0].length; i++){ // строка с опорным элементом
+                now[y][i] = last[y][i].div(num);
+            }
+            for(int j = 0; j < last.length; j++){ // столбец с опорным элементом
+                if(j != y){
+                    now[j][x] = new SimpleFraction(0);
+                }
+            }
+            for(int i = 0; i < last.length; i++){ // всё остальное
+                if(i != y) {
+                    for (int j = 0; j < last[0].length; j++) {
+                        if(j != x) {
+                            temp = last[i][x].multi(last[y][j]).div(num);
+                            now[i][j] = last[i][j].minus(temp);
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < last.length; i++){
+                last[i] = now[i].clone();
+            }
         }
-        SimpleFraction result = new SimpleFraction(0);
-        for(Map.Entry<Integer, SimpleFraction> entry: now.entrySet()){
-            result = result.plus((entry.getKey() == -1? entry.getValue():
-                    count(data, entry.getKey()).multi(entry.getValue()))); // складываем все переменные, умножая на их значения, входящие в состав данной
-        }
-        return result;
     }
 
     private static boolean[] nextPermutation(boolean[] arr){
