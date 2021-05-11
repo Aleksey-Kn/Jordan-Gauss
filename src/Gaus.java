@@ -122,7 +122,7 @@ public class Gaus {
             ind++;
         if (ind == arr.length) {
             Arrays.fill(arr, false);
-            for(int i = arr.length - ++forPeramitation; i >= 0; i--){
+            for(int i = arr.length - ++forPeramitation, c = 0; i >= 0 && c < counter; i--, counter++){
                 arr[i] = true;
             }
         } else {
