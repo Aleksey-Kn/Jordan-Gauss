@@ -136,7 +136,7 @@ public class Gaus {
             }
             min = new SimpleFraction(Integer.MAX_VALUE);
             for(int i = 0; i < h - 1; i++){
-                if(last[i][x].isPositive()) {
+                if(last[i][x].isPositive() && !last[i][x].isNull()) {
                     now = last[i][w - 1].div(last[i][x]);
                     if (min.compareTo(now) > 0) {
                         min = now;
@@ -146,6 +146,7 @@ public class Gaus {
             }
             last = makeBasis(last, y, x);
             basis.put(y, x);
+            printSymplix(last, basis);
         }
 
         System.out.print("Z(");
@@ -166,7 +167,7 @@ public class Gaus {
 
             temp = (basis.containsValue(w - 2) ? finalLast[basis.getKey(w - 2)][w - 1].toString() : "0");
             if(temp.equals("0") && !answer.containsKey(w - 2)) {
-                System.out.print("0; ");
+                System.out.print("0)= ");
             }
             else {
                 System.out.printf("%sл+%s-%sл)= ",
